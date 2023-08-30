@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!-- Namespace inequality test: equal after attribute value normalization -->
+<foo xmlns:a="urn:xyzzy"
+     xmlns:b=" urn:xyzzy ">
+
+<bar a:attr="1" b:attr="2"/>
+
+</foo>
+

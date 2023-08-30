@@ -1,0 +1,5 @@
+
+<!-- BadName containing char #x2040; -->
+<root>
+	<⁀BadName/>	
+</root>

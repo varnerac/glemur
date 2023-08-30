@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<!-- The xml namespace must not be declared as the default namespace. -->
+<foo xmlns="http://www.w3.org/XML/1998/namespace"/>

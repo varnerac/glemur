@@ -1,0 +1,5 @@
+
+<!-- BadName containing char 0x300; -->
+<root>
+	<̀BadName/>	
+</root>

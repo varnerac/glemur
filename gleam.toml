@@ -1,0 +1,13 @@
+name = "glemur"
+version = "0.1.0"
+description = "A Gleam XML parser"
+
+licences = ["Apache-2.0"]
+repository = { type = "github", user = "varnerac", repo = "glemur" }
+
+[dependencies]
+gleam_stdlib = "~> 0.30"
+
+[dev-dependencies]
+gleeunit = "~> 0.10"
+gleam_erlang = "~> 0.20"

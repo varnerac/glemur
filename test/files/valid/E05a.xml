@@ -1,0 +1,2 @@
+<!-- CDATA sections may occur in Mixed content. -->
+<foo>a <![CDATA[cdata section]]> in mixed content</foo>

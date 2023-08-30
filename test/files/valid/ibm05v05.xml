@@ -1,0 +1,47 @@
+<!-- Legal Names containing one to four characters in order from the list below  used in Attr delcs and attributes.  x003A, 0x00C0, 0x00C1, 0x02FE, 0x00C2, 0x00C3, 0x02FD, 0x02FF, 0x0370, 0x0371, 0x037C, 0x037D, 0x037F, 0x0380, 0x1FFE, 0x1FFF, 0x200C, 0x200D, 0x2070, 0x2071, 0x218E, 0x218F, 0x2C00, 0x2C01, 0x2FEE, 0x2FEF, 0x3001, 0x3002, 0xD7FE, 0xD7FF, 0xF900, 0xF901, 0xFFFD, 0x002D, 0x002E, 0x0041, 0x007A, 0x0030, 0x00B7, 0x0300, 0x0301, 0x036E, 0x036F, 0x203F, 0x2040 -->
+<LegalName>
+<LegalName0 attr0="Name:"	/>
+<LegalName1 attr1="NameÀ"	/>
+<LegalName2 attr2="NameÁ"	/>
+<LegalName3 attr3="Name˾"	/>
+<LegalName4 attr4="NameÂ"	/>
+<LegalName5 attr5="NameÃ"	/>
+<LegalName6 attr6="Name˽"	/>
+<LegalName7 attr7="Name˿"	/>
+<LegalName8 attr8="NameͰ"	/>
+<LegalName9 attr9="Nameͱ"	/>
+<LegalName10 attr10="Nameͼ"	/>
+<LegalName11 attr11="Nameͽ"	/>
+<LegalName12 attr12="NameͿ"	/>
+<LegalName13 attr13="Name΀"	/>
+<LegalName14 attr14="Name῾"	/>
+<LegalName15 attr15="Name῿"	/>
+<LegalName16 attr16="Name‌"	/>
+<LegalName17 attr17="Name‍"	/>
+<LegalName18 attr18="Name⁰"	/>
+<LegalName19 attr19="Nameⁱ"	/>
+<LegalName20 attr20="Name↎"	/>
+<LegalName21 attr21="Name↏"	/>
+<LegalName22 attr22="NameⰀ"	/>
+<LegalName23 attr23="NameⰁ"	/>
+<LegalName24 attr24="Name⿮"	/>
+<LegalName25 attr25="Name⿯"	/>
+<LegalName26 attr26="Name、"	/>
+<LegalName27 attr27="Name。"	/>
+<LegalName28 attr28="Name퟾"	/>
+<LegalName29 attr29="Name퟿"	/>
+<LegalName30 attr30="Name豈"	/>
+<LegalName31 attr31="Name更"	/>
+<LegalName32 attr32="Name�"	/>
+<LegalName33 attr33="Name-"	/>
+<LegalName34 attr34="Name."	/>
+<LegalName35 attr35="NameA"	/>
+<LegalName36 attr36="Namez"	/>
+<LegalName37 attr37="Name0"	/>
+<LegalName38 attr38="Name·"	/>
+<LegalName39 attr39="Namè"	/>
+<LegalName40 attr40="Namé"	/>
+<LegalName41 attr41="Nameͮ"	/>
+<LegalName42 attr42="Nameͯ"	/>
+<LegalName43 attr43="Name‿"	/>
+</LegalName>

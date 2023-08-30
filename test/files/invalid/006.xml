@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Namespace name test: an http IRI that is not a URI -->
+<foo xmlns="http://example.org/ros�"/>

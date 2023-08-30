@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<!-- Namespace name test: a perfectly good http URI with a fragment -->
+<foo xmlns="http://example.org/namespace#apples"/>
