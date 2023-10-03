@@ -2,6 +2,7 @@ import gleam/uri.{Uri}
 import gleam/list
 import gleam/result
 import gleam/string
+import gleam/string_builder.{StringBuilder}
 import gleam/option.{None, Option, Some}
 import glemur/parse/acc
 import glemur/parse/pi
@@ -18,14 +19,14 @@ import glemur/parse/config.{Config}
 import glemur/parse/char_data
 import glemur/parse/util
 
-pub type ElementContent {
-  PIContent(#(String, Option(String)))
-  CharDataContent(String)
-  ElContent(Element)
-}
-
 pub type Element {
-  Element(name: Qname, attrs: List(Attribute), content: List(ElementContent))
+  Element(
+    name: Qname,
+    attrs: List(Attribute),
+    pis: List(#(String, Option(String))),
+    cdata: String,
+    sub_els: List(Element),
+  )
 }
 
 pub type Attribute =
@@ -43,9 +44,11 @@ type ElementState {
   ElementState(
     default_ns: Option(String),
     ns_declarations: List(#(String, String)),
+    pis: List(#(String, Option(String))),
     name: Qname,
     attrs: List(#(Qname, String)),
-    content: List(ElementContent),
+    cdata: StringBuilder,
+    sub_els: List(Element),
   )
 }
 
@@ -73,24 +76,17 @@ pub fn parse_el(
 ) -> Result(#(BitString, Element), ParserError) {
   use bs <- result.try(parser.parse_str(bs, "<"))
   use #(bs, name) <- result.try(qname.parse_qname(bs))
-  use Nil <- result.try(no_el_xmlns_prefix(bs, name))
   let el_state =
     ElementState(
       name: name,
       default_ns: default_ns,
       ns_declarations: ns_declarations,
       attrs: [],
-      content: [],
+      pis: [],
+      cdata: string_builder.new(),
+      sub_els: [],
     )
   parse_attrs(conf, bs, el_state)
-}
-
-// Element names MUST NOT have the preﬁx xmlns
-fn no_el_xmlns_prefix(bs: BitString, el_name: Qname) -> Result(Nil, ParserError) {
-  case el_name {
-    #(Some("xmlns"), _) -> error.invalid_el_prefix(bs)
-    _ -> Ok(Nil)
-  }
 }
 
 fn parse_attrs(
@@ -127,7 +123,7 @@ fn parse_attr(
 }
 
 fn next_in_el(bs: BitString) -> NextInEl {
-  let rslt = case bs {
+  case bs {
     <<>> | <<"/":utf8>> -> EndOfStream(bs)
     <<">":utf8, rest:binary>> -> EndOfTag(rest)
     <<"/>":utf8, rest:binary>> -> EndOfEmptyTag(rest)
@@ -145,7 +141,6 @@ fn next_in_el(bs: BitString) -> NextInEl {
         False -> Unexpected(bs)
       }
   }
-  rslt
 }
 
 // Convert an ElementState into an Element
@@ -176,7 +171,9 @@ fn make_element(
       Ok(Element(
         name: new_name,
         attrs: new_attrs,
-        content: list.reverse(el_state.content),
+        pis: list.reverse(el_state.pis),
+        cdata: string_builder.to_string(el_state.cdata),
+        sub_els: el_state.sub_els,
       ))
   }
 }
@@ -185,6 +182,7 @@ fn update_el_name(el_state: ElementState) -> Result(Qname, Nil) {
   case el_state.name {
     #(None, local_part) -> Ok(#(el_state.default_ns, local_part))
     #(Some("xml"), local_part) -> Ok(#(Some(xml_ns), local_part))
+    #(Some("xmlns"), _) -> Error(Nil)
     #(Some(ns_prefix), local_part) ->
       case list.key_find(el_state.ns_declarations, ns_prefix) {
         Ok(ns) -> Ok(#(Some(ns), local_part))
@@ -326,14 +324,13 @@ fn parse_el_content(
       use bs <- result.try(comment.parse_comment(conf, bs))
       parse_el_content(conf, bs, el_state)
     }
-
     <<"<?":utf8, _:binary>> -> {
       use #(bs, opt_pi) <- result.try(pi.parse_pi(conf, bs))
-      let el_content = case opt_pi {
-        Some(pi) -> [PIContent(pi), ..el_state.content]
-        None -> el_state.content
+      let new_pis = case opt_pi {
+        Some(pi) -> [pi, ..el_state.pis]
+        None -> el_state.pis
       }
-      parse_el_content(conf, bs, ElementState(..el_state, content: el_content))
+      parse_el_content(conf, bs, ElementState(..el_state, pis: new_pis))
     }
     <<"<!":utf8, _:binary>> -> {
       use #(bs, char_data) <- result.try(cdata.parse_cdata_section(bs))
@@ -348,10 +345,7 @@ fn parse_el_content(
         el_state.ns_declarations,
       ))
       let new_el_state =
-        ElementState(
-          ..el_state,
-          content: [ElContent(sub_el), ..el_state.content],
-        )
+        ElementState(..el_state, sub_els: [sub_el, ..el_state.sub_els])
       parse_el_content(conf, bs, new_el_state)
     }
     _ -> {
@@ -396,12 +390,8 @@ fn parse_el_end_tag(
 }
 
 fn add_char_data(el_state: ElementState, char_data: String) -> ElementState {
-  let new_content = case el_state.content {
-    [CharDataContent(existing_cdata), ..rest] -> [
-      CharDataContent(string.append(existing_cdata, char_data)),
-      ..rest
-    ]
-    _ -> [CharDataContent(char_data), ..el_state.content]
-  }
-  ElementState(..el_state, content: new_content)
+  ElementState(
+    ..el_state,
+    cdata: string_builder.append(el_state.cdata, char_data),
+  )
 }

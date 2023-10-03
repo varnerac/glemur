@@ -39,7 +39,6 @@ pub fn parse_pi_instruction(
         Some(val) -> Ok(#(rest, Some(util.unsafe_to_string(val))))
       }
     }
-
     <<cp:utf8_codepoint, rest:bit_string>> ->
       case char.is_char(cp) {
         True -> parse_pi_instruction(rest, acc.maybe_append(acc, cp))

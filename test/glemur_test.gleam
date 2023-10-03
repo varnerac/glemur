@@ -1,9 +1,7 @@
 import gleam/option.{None, Some}
 import gleeunit
 import glemur_config
-import glemur/parse/doc.{XmlDocument}
-import glemur/parse/el.{Element}
-import glemur
+import glemur.{Element, NoContent, XmlDocument}
 
 pub fn main() {
   gleeunit.main()
@@ -14,10 +12,11 @@ pub fn parse_ns_empty_element_test() {
     encoding: None,
     el: Element(
       attrs: [],
-      content: [],
+      pis: [],
+      content: NoContent,
       name: #(Some("https://namespace.com/a/"), "empty_el"),
     ),
-    processing_instructions: [],
+    pis: [],
     standalone: None,
     version: None,
   )) =
