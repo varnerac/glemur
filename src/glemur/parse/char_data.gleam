@@ -88,8 +88,7 @@ fn parse_char_ref_(bs: BitString, is_hex: Bool, acc: BitString) {
         True -> 16
         False -> 10
       }
-      let assert Ok(codepoint_val) =
-        int.base_parse(util.unsafe_to_string(acc), base)
+      let assert Ok(codepoint_val) = int.base_parse(util.to_str(acc), base)
       case char_codepoint(codepoint_val) {
         Ok(cp) -> Ok(#(rest, cp))
         Error(Nil) -> error.invalid_character_reference(bs)

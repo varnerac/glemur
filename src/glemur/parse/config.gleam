@@ -28,7 +28,7 @@ pub fn allow(policy, error, bs) -> Result(Nil, ParserError) {
   case policy {
     Forbid ->
       bs
-      |> util.unsafe_to_string
+      |> util.to_str
       |> error
       |> Error
     _ -> Ok(Nil)

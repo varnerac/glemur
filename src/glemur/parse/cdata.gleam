@@ -1,6 +1,6 @@
 import gleam/result
 import glemur/parse/error.{ParserError}
-import glemur/parse/acc
+import glemur/parse/util
 import glemur/parse/char
 import glemur/parse/parser
 
@@ -20,7 +20,7 @@ fn parse_cdata_section_(
   acc: BitString,
 ) -> Result(#(BitString, String), ParserError) {
   case bs {
-    <<"]]>":utf8, rest:binary>> -> Ok(#(rest, acc.to_str(acc)))
+    <<"]]>":utf8, rest:binary>> -> Ok(#(rest, util.to_str(acc)))
     <<"]]":utf8>> | <<"]":utf8>> | <<>> -> error.ueos(bs)
     _ -> {
       use #(bs, cp) <- result.try(char.parse_char(bs))

@@ -22,7 +22,7 @@ pub fn parse_name(
     | <<"xmL":utf8, _:binary>>
     | <<"xML":utf8, _:binary>> ->
       bs
-      |> util.unsafe_to_string
+      |> util.to_str
       |> InvalidName
       |> Error
     <<char:utf8_codepoint, rest:binary>> ->
@@ -30,7 +30,7 @@ pub fn parse_name(
         True -> parse_name_(rest, acc.maybe_append(acc, char))
         False ->
           bs
-          |> util.unsafe_to_string
+          |> util.to_str
           |> InvalidName
           |> Error
       }
@@ -49,9 +49,9 @@ fn parse_name_(
             rest,
             option.map(acc, fn(a) { <<a:bit_string, char:utf8_codepoint>> }),
           )
-        False -> Ok(#(rest, option.map(acc, util.unsafe_to_string(_))))
+        False -> Ok(#(rest, option.map(acc, util.to_str(_))))
       }
-    _ -> Ok(#(bs, option.map(acc, util.unsafe_to_string(_))))
+    _ -> Ok(#(bs, option.map(acc, util.to_str(_))))
   }
 }
 

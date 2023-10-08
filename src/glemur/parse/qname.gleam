@@ -3,7 +3,6 @@ import gleam/result
 import gleam/string_builder
 import gleam/option.{None, Option, Some}
 import glemur/parse/char
-import glemur/parse/acc
 import glemur/parse/util
 import glemur/parse/error.{
   ParserError, UnexpectedCharacter, UnexpectedEndOfStream,
@@ -34,7 +33,7 @@ fn parse_nc_name(bs: BitString) -> Result(#(BitString, String), ParserError) {
   case bs {
     <<>> ->
       bs
-      |> util.unsafe_to_string
+      |> util.to_str
       |> UnexpectedEndOfStream
       |> Error
     <<char:utf8_codepoint, rest:binary>> -> {
@@ -42,7 +41,7 @@ fn parse_nc_name(bs: BitString) -> Result(#(BitString, String), ParserError) {
         True -> parse_nc_name_(rest, <<char:utf8_codepoint>>)
         False ->
           bs
-          |> util.unsafe_to_string
+          |> util.to_str
           |> UnexpectedCharacter
           |> Error
       }
@@ -55,13 +54,13 @@ fn parse_nc_name_(
   acc: BitString,
 ) -> Result(#(BitString, String), ParserError) {
   case bs {
-    <<":":utf8, _:binary>> -> Ok(#(bs, acc.to_str(acc)))
+    <<":":utf8, _:binary>> -> Ok(#(bs, util.to_str(acc)))
     <<char:utf8_codepoint, rest:binary>> ->
       case is_qname_char(char) {
         True -> parse_nc_name_(rest, <<acc:bit_string, char:utf8_codepoint>>)
-        False -> Ok(#(bs, acc.to_str(acc)))
+        False -> Ok(#(bs, util.to_str(acc)))
       }
-    _ -> Ok(#(bs, acc.to_str(acc)))
+    _ -> Ok(#(bs, util.to_str(acc)))
   }
 }
 

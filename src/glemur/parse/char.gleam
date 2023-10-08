@@ -10,11 +10,10 @@ pub fn parse_char(
   bs: BitString,
 ) -> Result(#(BitString, UtfCodepoint), ParserError) {
   case bs {
-    <<cr, lf, rest:bit_string>> if cr == carriage_return && lf == newline ->
+    <<cr, lf, rest:binary>> if cr == carriage_return && lf == newline ->
       Ok(#(rest, newline_cp()))
-    <<cr, rest:bit_string>> if cr == carriage_return ->
-      Ok(#(rest, newline_cp()))
-    <<cp:utf8_codepoint, rest:bit_string>> ->
+    <<cr, rest:binary>> if cr == carriage_return -> Ok(#(rest, newline_cp()))
+    <<cp:utf8_codepoint, rest:binary>> ->
       case is_char(cp) {
         True -> Ok(#(rest, cp))
         False -> error.invalid_char(bs)
@@ -23,10 +22,19 @@ pub fn parse_char(
   }
 }
 
-pub fn is_next(bs: BitString, char: Int) -> Bool {
+pub fn next_char(
+  bs: BitString,
+) -> Result(#(BitString, UtfCodepoint), ParserError) {
   case bs {
-    <<c, _:bit_string>> if c == char -> True
-    _ -> False
+    <<cr, lf, rest:binary>> if cr == carriage_return && lf == newline ->
+      Ok(#(rest, newline_cp()))
+    <<cr, rest:binary>> if cr == carriage_return -> Ok(#(rest, newline_cp()))
+    <<cp:utf8_codepoint, rest:binary>> ->
+      case is_char(cp) {
+        True -> Ok(#(rest, cp))
+        False -> error.invalid_char(bs)
+      }
+    <<>> -> error.ueos(bs)
   }
 }
 

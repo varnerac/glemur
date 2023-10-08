@@ -33,13 +33,13 @@ pub fn parse_pi_instruction(
 ) -> Result(#(BitString, Option(String)), ParserError) {
   case bs {
     <<>> | <<"?":utf8>> -> error.ueos(bs)
-    <<"?>":utf8, rest:bit_string>> -> {
+    <<"?>":utf8, rest:binary>> -> {
       case acc {
         None | Some(<<>>) -> Ok(#(rest, None))
-        Some(val) -> Ok(#(rest, Some(util.unsafe_to_string(val))))
+        Some(val) -> Ok(#(rest, Some(util.to_str(val))))
       }
     }
-    <<cp:utf8_codepoint, rest:bit_string>> ->
+    <<cp:utf8_codepoint, rest:binary>> ->
       case char.is_char(cp) {
         True -> parse_pi_instruction(rest, acc.maybe_append(acc, cp))
         False -> error.invalid_char(bs)

@@ -3,7 +3,6 @@ import gleam/string
 import gleam/result
 import gleam/option.{None, Option, Some}
 import glemur/parse/ws
-import glemur/parse/acc
 import glemur/parse/error.{
   ParserError, UnexpectedCharacter, UnexpectedEndOfStream,
 }
@@ -27,7 +26,7 @@ pub fn parse_one_or_more_letters(
   bs: BitString,
 ) -> Result(#(BitString, String), ParserError) {
   case bs {
-    <<letter, rest:bit_string>> if letter >= lowercase_a && letter <= lowercase_z || letter >= uppercase_a && letter <= uppercase_z ->
+    <<letter, rest:binary>> if letter >= lowercase_a && letter <= lowercase_z || letter >= uppercase_a && letter <= uppercase_z ->
       parse_one_or_more_letters_(rest, <<letter>>)
     <<>> -> error.ueos(bs)
     _ -> error.uc(bs)
@@ -40,9 +39,9 @@ fn parse_one_or_more_letters_(
 ) -> Result(#(BitString, String), ParserError) {
   case bs {
     <<>> -> error.ueos(bs)
-    <<letter, rest:bit_string>> if letter >= lowercase_a && letter <= lowercase_z || letter >= uppercase_a && letter <= uppercase_z ->
+    <<letter, rest:binary>> if letter >= lowercase_a && letter <= lowercase_z || letter >= uppercase_a && letter <= uppercase_z ->
       parse_one_or_more_letters_(rest, <<acc:bit_string, letter>>)
-    _ -> Ok(#(bs, acc.to_str(acc)))
+    _ -> Ok(#(bs, util.to_str(acc)))
   }
 }
 
@@ -60,9 +59,9 @@ pub fn parse_str(bs: BitString, str: String) -> Result(BitString, ParserError) {
       Ok(new_bs)
     }
     False ->
-      case bs == <<>> || string.starts_with(str, util.unsafe_to_string(bs)) {
-        True -> Error(UnexpectedEndOfStream(util.unsafe_to_string(bs)))
-        False -> Error(UnexpectedCharacter(util.unsafe_to_string(bs)))
+      case bs == <<>> || string.starts_with(str, util.to_str(bs)) {
+        True -> Error(UnexpectedEndOfStream(util.to_str(bs)))
+        False -> Error(UnexpectedCharacter(util.to_str(bs)))
       }
   }
 }
@@ -73,7 +72,7 @@ const double_quote = 34
 
 pub fn parse_quote_char(bs: BitString) -> Result(#(BitString, Int), ParserError) {
   case bs {
-    <<quote, rest:bit_string>> if quote == double_quote || quote == single_quote ->
+    <<quote, rest:binary>> if quote == double_quote || quote == single_quote ->
       Ok(#(rest, quote))
     <<>> -> error.ueos(bs)
     _ -> error.uc(bs)
@@ -85,7 +84,7 @@ pub fn parse_this_char(
   char: Int,
 ) -> Result(BitString, ParserError) {
   case bs {
-    <<a_char, rest:bit_string>> if a_char == char -> Ok(rest)
+    <<a_char, rest:binary>> if a_char == char -> Ok(rest)
     <<>> -> error.ueos(bs)
     _ -> error.uc(bs)
   }

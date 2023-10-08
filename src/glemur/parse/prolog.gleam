@@ -4,7 +4,7 @@ import glemur/parse/parser
 import glemur/parse/ws
 import glemur/parse/misc
 import glemur/parse/config.{Config}
-import glemur/parse/acc
+import glemur/parse/util
 import glemur/parse/error.{ParserError}
 
 const lowercase_a = 97
@@ -86,7 +86,7 @@ fn parse_yes_no(bs: BitString) -> Result(#(BitString, Bool), ParserError) {
 
 fn parse_version_num(bs: BitString) -> Result(#(BitString, String), ParserError) {
   case bs {
-    <<"'1.0'":utf8, rest:bit_string>> | <<"\"1.0\"":utf8, rest:bit_string>> ->
+    <<"'1.0'":utf8, rest:binary>> | <<"\"1.0\"":utf8, rest:binary>> ->
       Ok(#(rest, "1.0"))
     _ -> {
       let versions = ["'1.0'", "\"1.0\""]
@@ -126,7 +126,7 @@ fn parse_enc_name_rest(
       parse_enc_name_rest(rest, quote, <<acc:bit_string, char>>)
     //single quote
     <<quote_char, rest:binary>> if quote_char == quote ->
-      Ok(#(rest, acc.to_str(acc)))
+      Ok(#(rest, util.to_str(acc)))
     _ -> error.uc(bs)
   }
 }

@@ -10,4 +10,4 @@ gleam_stdlib = "~> 0.30"
 
 [dev-dependencies]
 gleeunit = "~> 0.10"
-gleam_erlang = "~> 0.20"
+simplifile = "~> 0.1.14"

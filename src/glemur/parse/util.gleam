@@ -1,7 +1,7 @@
-import gleam/dynamic
+import gleam/bit_string
 
-pub fn unsafe_to_string(bs: BitString) -> String {
-  bs
-  |> dynamic.from
-  |> dynamic.unsafe_coerce
+@external(erlang, "glemur_erl", "to_str")
+pub fn to_str(bs: BitString) -> String {
+  let assert Ok(str) = bit_string.to_string(bs)
+  str
 }

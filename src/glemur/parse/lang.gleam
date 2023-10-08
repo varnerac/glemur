@@ -1,7 +1,7 @@
 import gleam/result
 import gleam/bit_string
 import glemur/parse/error.{ParserError}
-import glemur/parse/acc
+import glemur/parse/util
 import glemur/parse/parser
 
 const lowercase_a = 97
@@ -35,14 +35,14 @@ pub fn parse_lang_id(bs: BitString) -> Result(#(BitString, String), ParserError)
 
 fn parse_iso_639_code(bs: BitString) {
   case bs {
-    <<first_letter, second_letter, third_letter, rest:bit_string>> if {
+    <<first_letter, second_letter, third_letter, rest:binary>> if {
       first_letter >= uppercase_a && first_letter <= uppercase_z || first_letter >= lowercase_a && first_letter <= lowercase_z
     } && {
       second_letter >= uppercase_a && second_letter <= uppercase_z || second_letter >= lowercase_a && second_letter <= lowercase_z
     } && {
       third_letter >= uppercase_a && third_letter <= uppercase_z || third_letter >= lowercase_a && third_letter <= lowercase_z
     } -> parse_subcodes(rest, <<first_letter, second_letter, third_letter>>)
-    <<first_letter, second_letter, rest:bit_string>> if {
+    <<first_letter, second_letter, rest:binary>> if {
       first_letter >= uppercase_a && first_letter <= uppercase_z || first_letter >= lowercase_a && first_letter <= lowercase_z
     } && {
       second_letter >= uppercase_a && second_letter <= uppercase_z || second_letter >= lowercase_a && second_letter <= lowercase_z
@@ -72,16 +72,16 @@ fn parse_iana_or_user_code(bs: BitString) {
 fn parse_subcodes(bs: BitString, acc: BitString) {
   case bs {
     <<hyphen_char>> if hyphen_char == hyphen -> error.ueos(bs)
-    <<hyphen_char, letter, rest:bit_string>> if hyphen_char == hyphen && {
+    <<hyphen_char, letter, rest:binary>> if hyphen_char == hyphen && {
       letter >= uppercase_a && letter <= uppercase_z || letter >= lowercase_a && letter <= lowercase_z
     } -> parse_subcodes_(rest, <<acc:bit_string, hyphen_char, letter>>)
-    _ -> Ok(#(bs, acc.to_str(acc)))
+    _ -> Ok(#(bs, util.to_str(acc)))
   }
 }
 
 fn parse_subcodes_(bs: BitString, acc: BitString) {
   case bs {
-    <<letter, rest:bit_string>> if letter >= uppercase_a && letter <= uppercase_z || letter >= lowercase_a && letter <= lowercase_z ->
+    <<letter, rest:binary>> if letter >= uppercase_a && letter <= uppercase_z || letter >= lowercase_a && letter <= lowercase_z ->
       parse_subcodes_(rest, <<acc:bit_string, letter>>)
     <<>> -> error.ueos(bs)
     _ -> parse_subcodes(bs, acc)

@@ -21,7 +21,7 @@ pub fn parse_comment(
 
 fn fail_on_hyphen(bs: BitString) -> Result(Nil, ParserError) {
   case bs {
-    <<h, _:bit_string>> if h == hyphen -> error.invalid_comment(bs)
+    <<h, _:binary>> if h == hyphen -> error.invalid_comment(bs)
     _ -> Ok(Nil)
   }
 }

@@ -1,8 +1,8 @@
-import gleam/erlang/file
 import gleam/list
 import gleam/string
 import gleam/bit_string
 import gleam/io
+import simplifile
 import glemur_config as configs
 import glemur_cover
 import gleeunit/should
@@ -70,7 +70,7 @@ fn parse(
 }
 
 fn dir_files(dir: String) {
-  let assert Ok(files) = file.list_directory(dir)
+  let assert Ok(files) = simplifile.list_contents(dir)
   files
   |> list.map(fn(f) { dir <> f })
 }
@@ -104,7 +104,7 @@ fn parse_(
 }
 
 fn parse_file(config: Config, path: String) {
-  let assert Ok(str) = file.read(path)
+  let assert Ok(str) = simplifile.read(path)
   doc.parse_doc(config, bit_string.from_string(str))
 }
 
@@ -118,7 +118,7 @@ fn parse_maybe_unexpected_eos(
   valid_dir: String,
 ) -> Result(Nil, Nil) {
   let [first, ..rest] = dir_files(valid_dir)
-  let assert Ok(str) = file.read(first)
+  let assert Ok(str) = simplifile.read(first)
   let cps =
     str
     |> string.to_utf_codepoints
@@ -136,7 +136,7 @@ fn parse_maybe_unexpected_eos_(
     [_], [] -> Ok(Nil)
     [_], [next, ..rest] -> {
       io.println_error("maybe unexpected eos parsing: " <> next)
-      let assert Ok(str) = file.read(next)
+      let assert Ok(str) = simplifile.read(next)
       str
       |> string.to_utf_codepoints
       |> remove_trailing_codepoint

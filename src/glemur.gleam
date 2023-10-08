@@ -10,7 +10,7 @@ import glemur/parse/config.{Config}
 
 pub type ElContent {
   NoContent
-  Els(List(Element))
+  Elements(List(Element))
   CharData(String)
 }
 
@@ -92,7 +92,7 @@ pub fn parse_element(
     |> result.map_error(convert_error)
     |> result.map(fn(t) { #(t.0, convert_element(t.1)) })
   use #(bs, el) <- result.try(el_rslt)
-  Ok(#(el, util.unsafe_to_string(bs)))
+  Ok(#(el, util.to_str(bs)))
 }
 
 fn convert_element(element: el.Element) -> Element {
@@ -103,7 +103,7 @@ fn convert_element(element: el.Element) -> Element {
         name: element.name,
         pis: element.pis,
         attrs: element.attrs,
-        content: Els(new_sub_els),
+        content: Elements(new_sub_els),
       )
     }
     el.Element(cdata: "", sub_els: [], ..) ->

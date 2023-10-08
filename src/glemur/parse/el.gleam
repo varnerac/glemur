@@ -4,7 +4,6 @@ import gleam/result
 import gleam/string
 import gleam/string_builder.{StringBuilder}
 import gleam/option.{None, Option, Some}
-import glemur/parse/acc
 import glemur/parse/pi
 import glemur/parse/parser
 import glemur/parse/cdata
@@ -151,16 +150,12 @@ fn make_element(
   let attrs_result =
     el_state.attrs
     |> update_attrs(el_state.ns_declarations, [])
-    |> result.replace_error(InvalidAttributeNamespacePrefix(util.unsafe_to_string(
-      bs,
-    )))
+    |> result.replace_error(InvalidAttributeNamespacePrefix(util.to_str(bs)))
   use new_attrs <- result.try(attrs_result)
   let name_result =
     el_state
     |> update_el_name
-    |> result.replace_error(InvalidElementNamespacePrefix(util.unsafe_to_string(
-      bs,
-    )))
+    |> result.replace_error(InvalidElementNamespacePrefix(util.to_str(bs)))
   use new_name <- result.try(name_result)
   let attr_names = list.map(new_attrs, fn(attr: Attribute) { attr.0 })
   let has_duplicate_attr_names =
@@ -240,7 +235,7 @@ fn parse_attr_val(
     <<qc, rest:binary>> if qc == quote_char -> {
       let val =
         acc
-        |> acc.to_str
+        |> util.to_str
         |> string.trim_right
       Ok(#(rest, val))
     }
@@ -369,7 +364,7 @@ fn parse_char_data(
   acc: BitString,
 ) -> Result(#(BitString, String), ParserError) {
   case bs {
-    <<lt, _:bit_string>> if lt == less_than -> Ok(#(bs, acc.to_str(acc)))
+    <<lt, _:binary>> if lt == less_than -> Ok(#(bs, util.to_str(acc)))
     _ -> {
       use #(bs, cp) <- result.try(char_data.parse_char_data_codepoint(bs))
       parse_char_data(bs, <<acc:bit_string, cp:utf8_codepoint>>)
